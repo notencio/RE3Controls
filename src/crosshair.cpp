@@ -486,6 +486,16 @@ bool PadGunAimed(uint32_t ch) {
            GunUp(ch) && !At<uint8_t>(ch, ChScope) && PlainGun(ch);
 }
 
+// PadGunAimed, but also while the gun is being reloaded with the aim held: GunUp does not count the reload action,
+// so the aim camera lag would drop out for the whole reload.
+bool PadGunAimedLag(uint32_t ch) {
+    if (PadGunAimed(ch)) return true;
+    if (!Readable((void*)ch, 0x3000)) return false;
+    const uint32_t act = Rd(ch + ch::CurAction);
+    return act && Rd(act) == plact::Reload && Rd(ch + ch::NetControl) == 0 && PadDevice(ch) && GunAimHeld(ch) &&
+           !At<uint8_t>(ch, ChScope) && PlainGun(ch);
+}
+
 bool LocalAimPoint(uint32_t ch, float* out) {
     if (!Readable((void*)ch, 0x3000)) return false;
     // Pad: the mod's crosshair; keyboard/mouse: the game's own centred mouse aim. Both shoot along the camera ray,

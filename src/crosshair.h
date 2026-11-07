@@ -11,5 +11,6 @@ bool LocalAimPoint(uint32_t character, float* out);
 bool AimsWithPad(uint32_t character);
 // The local pad player aims a plain gun, with the crosshair or the laser sight.
 bool PadGunAimed(uint32_t character);
+bool PadGunAimedLag(uint32_t character);  // PadGunAimed, also during a reload with the aim held
 // The player's control type aims with the right stick (B and D; there the left stick zooms in a scope).
 bool PadAimsWithRightStick(uint32_t character);

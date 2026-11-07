@@ -380,7 +380,7 @@ static void AimTracking(uint32_t q, int idx) {
     double& trackStart = g_aimTrackStart[idx];
     // The pad's aim with the crosshair or the laser sight; the game's keyboard aim has its own tight tracking.
     const bool on = c.enabled && !c.meleeOnly && c.aimCameraLag < 1.0f && At<uint8_t>(q, cam::AimRig) == 1 &&
-                    At<uint8_t>(q, 0x1B0) != 0 && fc.character && PadGunAimed(fc.character);
+                    At<uint8_t>(q, 0x1B0) != 0 && fc.character && PadGunAimedLag(fc.character);
     if (!on) {
         trackStart = -1;
         return;

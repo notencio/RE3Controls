@@ -110,6 +110,18 @@ static bool IsWesker(uint32_t character) {
     return ok > 0 && ((uint32_t(__cdecl*)(uint32_t))0x00715B90)(character) == 3;
 }
 
+// Sheva (character kind 1 from the game's function at 0x715B90, as seen in the log): her camera is over the left
+// shoulder by default, as in the original game.
+static bool IsSheva(uint32_t character) {
+    static int ok = 0;
+    if (!ok) {
+        static const BYTE sig[] = {0x8B, 0x4C, 0x24, 0x04, 0x8B, 0x01, 0x8B, 0x50, 0x10,
+                                   0xFF, 0xD2, 0x8B, 0x40, 0x20, 0xC1, 0xE8, 0x08};
+        ok = SafeEqual((void*)0x00715B90, sig, sizeof(sig)) ? 1 : -1;
+    }
+    return ok > 0 && ((uint32_t(__cdecl*)(uint32_t))0x00715B90)(character) == 1;
+}
+
 // Whether the game would reload now: its own test before a reload (0xB83E67) - the item in hand (0xC4B700(inv, 0xE))
 // is a gun whose magazine is not full and that has spare ammo (0xC4DE50). Without the expected code: always.
 static bool ReloadPossible(uint32_t character) {
@@ -520,6 +532,7 @@ static void ApplyControls(uint32_t padObj, uint32_t character) {
     // device each one plays with).
     FreeCam& fc = CamFor(character);
     fc.character = character;
+    fc.baseLeft = IsSheva(character);
     // ch+0x2D8C: 0x4000 riding something, with 0x80 a gun emplacement, 0x40 the jeep gun, 0x20 the airboat driver
     // (the airboat passenger has only 0x4000 and keeps the mod's controls).
     const uint32_t ride = At<uint32_t>(character, 0x2D8C);

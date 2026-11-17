@@ -328,7 +328,7 @@ static void Orbit(const FreeCam& fc, OrbitState& o, float dt, float* eye, float*
     if (!o.havePivot || fabsf(o.pivotY - wantY) > 150.0f) o.pivotY = wantY;
     o.pivotY += (wantY - o.pivotY) * (1.0f - expf(-dt * 10.0f));
     o.havePivot = true;
-    const float wantSide = fc.leftShoulder ? -1.0f : 1.0f;
+    const float wantSide = CamLeft(fc) ? -1.0f : 1.0f;
     o.shoulder += (wantSide - o.shoulder) * (1.0f - expf(-dt * 8.0f));
 
     const float p = fc.pitch;
@@ -516,7 +516,7 @@ static void __fastcall HookQfpsUpdate(uint32_t self, void* edx, uint32_t arg) {
         fc.initialised = true;
         o.havePivot = false;
         o.haveLast = false;
-        o.shoulder = fc.leftShoulder ? -1.0f : 1.0f;
+        o.shoulder = CamLeft(fc) ? -1.0f : 1.0f;
     }
     fc.lastCameraUpdate = now;
     FollowPlatform(fc, o);

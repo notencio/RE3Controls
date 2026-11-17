@@ -8,7 +8,8 @@ struct FreeCam {
     uint32_t character = 0;  // local player the camera belongs to
     float yaw = 0;           // world yaw the camera looks along (radians, same convention as the character)
     float pitch = 0;         // radians, + = looking down (camera above the shoulder), - = looking up
-    bool leftShoulder = false;  // camera over the left shoulder
+    bool leftShoulder = false;  // camera over the left shoulder (toggled with the swap button)
+    bool baseLeft = false;      // the character's own side: Sheva's camera is over the left shoulder by default
     bool active = false;     // the orbit camera runs this frame (not aiming, free camera on)
     bool initialised = false;
     bool noAimRig = false;   // reloading on the move: keep the normal camera while the gun is up
@@ -26,6 +27,8 @@ float DefaultCameraPitch();  // radians, from the ini
 
 // yaw helpers: forward = (sin yaw, 0, cos yaw), right = (-cos yaw, 0, sin yaw)
 // World facing of a character (on a moving boat or platform: its own yaw plus the platform's heading).
+// The side the camera is over now: Sheva's own side (baseLeft) flipped by the swap button.
+inline bool CamLeft(const FreeCam& fc) { return fc.leftShoulder != fc.baseLeft; }
 float CharacterYaw(uint32_t character);
 void SetCharacterYaw(uint32_t character, float yaw);
 // World position of a character (Pos is relative to the platform while it stands on one).

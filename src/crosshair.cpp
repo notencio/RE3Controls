@@ -327,7 +327,12 @@ int __fastcall HookLaserRaycast(uint32_t ch, void* edx) {
     return 0;
 }
 
+// The reticle size is a shared global that the game reads while it draws a cockpit's crosshair. The lock keeps the
+// set-and-draw of one cockpit from being interleaved with another cockpit's call.
+static volatile LONG g_reticleLock = 0;
+
 void __fastcall HookReticle(uint32_t cockpit, void* edx) {
+    while (InterlockedExchange(&g_reticleLock, 1)) YieldProcessor();
     g_reticleScale = 1.5f;  // the game's crosshair (another player's, the mouse cursor style) keeps its size
     g_reticleSpread = 15.0f;
     const uint32_t ch = Rd(cockpit + CkCharacter);
@@ -380,6 +385,7 @@ void __fastcall HookReticle(uint32_t cockpit, void* edx) {
     }
     oReticle(cockpit, edx);
     if (aimCh) memcpy((void*)(aimCh + ChAimPoint), aimSaved, 12);
+    InterlockedExchange(&g_reticleLock, 0);
 }
 
 // The character's reticle request (thiscall(character), plain ret; called by the gun actions and the knife actions):
